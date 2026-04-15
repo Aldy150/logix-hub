@@ -2,22 +2,18 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../lib/axios"; // L'instance axios avec withCredentials: true
 
-export default function Inscription() {
+export default function Connexion() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
 
   interface Data {
-    nom: string;
-    prenom: string;
     email: string;
     password: string;
   }
 
   const [formData, setFormData] = useState<Data>({
-    nom: "",
-    prenom: "",
     email: "",
     password: ""
   });
@@ -45,8 +41,6 @@ export default function Inscription() {
 
     // Validation locale (ton code)
     if (
-      !formData.nom.trim() ||
-      !formData.prenom.trim() ||
       !/\S+@\S+\.\S+/.test(formData.email) ||
       !formData.password.trim()
     ) {
@@ -67,8 +61,7 @@ export default function Inscription() {
       await api.get("/sanctum/csrf-cookie");
 
       // 2. Envoi des données (Laravel Breeze attend 'name' par défaut)
-      const reponse = await api.post("/register", {
-        name: `${formData.prenom} ${formData.nom}`, // On combine pour Laravel
+      const reponse = await api.post("/Login", { // On combine pour Laravel
         email: formData.email,
         password: formData.password,
         password_confirmation: formData.password, // Breeze exige une confirmation
@@ -79,8 +72,6 @@ export default function Inscription() {
       alert("Inscription réussie !");
       
       setFormData({
-        nom: "",
-        prenom: "",
         email: "",
         password: "",
       });
@@ -94,8 +85,6 @@ export default function Inscription() {
       alert("Erreur lors de l'envoi : " + message);
       
       setFormData({
-        nom: "",
-        prenom: "",
         email: "",
         password: ""
       });
@@ -116,7 +105,7 @@ export default function Inscription() {
       <div className="grid md:grid-cols-3 items-center [box-shadow:0_2px_10px_-3px_rgba(14,14,14,0.3)] rounded-xl overflow-hidden">
         <div className="max-md:order-1 flex flex-col justify-center md:space-y-16 space-y-8 max-md:mt-16 min-h-full bg-gradient-to-r from-slate-900 to-slate-700 lg:px-8 px-4 py-4">
           <div>
-            <h3 className="text-white text-lg">Créer votre compte</h3>
+            <h3 className="text-white text-lg">Connectez-vous en toute sécurité afin d'acceder à l'application</h3>
             <p className="text-[13px] text-slate-300 mt-3 leading-relaxed">Bienvenue sur notre page d'inscription ! Commencer par créer votre compte.</p>
           </div>
           <div>
@@ -130,20 +119,10 @@ export default function Inscription() {
         {/* Ajout du onSubmit ici */}
         <form onSubmit={valider} className="md:col-span-2 w-full py-6 px-6 sm:px-14 max-w-lg mx-auto">
           <div className="mb-8">
-            <h1 className="text-slate-900 text-2xl font-bold">Inscription</h1>
+            <h1 className="text-slate-900 text-2xl font-bold">Connexion</h1>
           </div>
 
           <div className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-slate-900 text-sm font-medium mb-2 block">Nom</label>
-                <input name="nom" value={formData.nom} onChange={handleChange} type="text" required className="text-slate-900 bg-white border border-slate-300 w-full text-sm px-4 py-2.5 rounded-md outline-blue-500" placeholder="Nom" />
-              </div>
-              <div>
-                <label className="text-slate-900 text-sm font-medium mb-2 block">Prénom</label>
-                <input name="prenom" value={formData.prenom} onChange={handleChange} type="text" required className="text-slate-900 bg-white border border-slate-300 w-full text-sm px-4 py-2.5 rounded-md outline-blue-500" placeholder="Prénom" />
-              </div>
-            </div>
             
             <div>
               <label className="text-slate-900 text-sm font-medium mb-2 block">Email</label>
