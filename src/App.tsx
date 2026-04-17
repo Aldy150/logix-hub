@@ -11,6 +11,7 @@ import Activities from "./pages/Activities";
 import Reports from "./pages/Reports";
 import NotFound from "./pages/NotFound";
 import Inscription from "./pages/inscription";
+import Connexion from "./pages/connexion";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/reports" element={<CRMLayout><Reports /></CRMLayout>} />
           <Route path="*" element={<NotFound />} />
           <Route path="/inscription" element={<Inscription />} />
+          <Route path="/connexion" element={<Connexion />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>

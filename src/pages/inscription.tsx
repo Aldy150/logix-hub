@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../lib/axios"; // L'instance axios avec withCredentials: true
 
 export default function Inscription() {
   const navigate = useNavigate();
@@ -62,43 +61,37 @@ export default function Inscription() {
     }
 
     try {
-      // --- AJOUT CONFIG AXIOS / SANCTUM ---
-      // 1. Initialiser le cookie CSRF
-      await api.get("/sanctum/csrf-cookie");
-
-      // 2. Envoi des données (Laravel Breeze attend 'name' par défaut)
-      const reponse = await api.post("/register", {
-        name: `${formData.prenom} ${formData.nom}`, // On combine pour Laravel
-        email: formData.email,
-        password: formData.password,
-        password_confirmation: formData.password, // Breeze exige une confirmation
+      const response = await fetch("http://localhost:8000/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify(formData),
       });
 
-      // --- FIN CONFIG AXIOS ---
+      const result = await response.json();
 
+      // Si le serveur renvoie une erreur (422, 500, etc.)
+      if (!response.ok) {
+        if (result.errors && result.errors.email) {
+          alert("Erreur : Cet email est déjà utilisé veuillez vous connecter !");
+          setFormData({ nom: "", prenom: "", email: "", password: "" });
+        } else {
+          alert(result.message || "Une erreur est survenue");
+        }
+        setIsLoading(false);
+        return; // On arrête l'exécution ici
+      }
+
+      // Si c'est un succès (201)
       alert("Inscription réussie !");
-      
-      setFormData({
-        nom: "",
-        prenom: "",
-        email: "",
-        password: "",
-      });
-      
-     navigate("/connexion", { replace: true });
+      setFormData({ nom: "", prenom: "", email: "", password: "" });
+      navigate("/connexion", { replace: true });
 
     } catch (err: any) {
       console.error(err);
-      // Gestion des erreurs Laravel (ex: email déjà pris)
-      const message = err.response?.data?.message || "Erreur serveur";
-      alert("Erreur lors de l'envoi : " + message);
-      
-      setFormData({
-        nom: "",
-        prenom: "",
-        email: "",
-        password: ""
-      });
+      alert("Impossible de contacter le serveur.");
     } finally {
       setIsLoading(false);
     }
@@ -122,7 +115,7 @@ export default function Inscription() {
           <div>
             <h3 className="text-white text-lg">Inscription simple & Sécurisée</h3>
             <p className="text-[13px] text-slate-300 mt-3 leading-relaxed">
-              Notre processus d'inscription est conçu pour être simple 
+              Notre processus d'inscription est conçu pour être simple
               et sécurisé. Nous accordons la priorité à la confidentialité et à la sécurité de vos donées..</p>
           </div>
         </div>
@@ -144,7 +137,7 @@ export default function Inscription() {
                 <input name="prenom" value={formData.prenom} onChange={handleChange} type="text" required className="text-slate-900 bg-white border border-slate-300 w-full text-sm px-4 py-2.5 rounded-md outline-blue-500" placeholder="Prénom" />
               </div>
             </div>
-            
+
             <div>
               <label className="text-slate-900 text-sm font-medium mb-2 block">Email</label>
               <input name="email" value={formData.email} onChange={handleChange} type="email" required className="text-slate-900 bg-white border border-slate-300 w-full text-sm px-4 py-2.5 rounded-md outline-blue-500" placeholder="Entrez votre email" />

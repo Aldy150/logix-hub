@@ -15,20 +15,12 @@ return [
     |
     */
 
-    'paths' => ['*'],
-
+    'paths' => ['api/*', 'sanctum/csrf-cookie'], // Vérifie bien que 'api/*' est là
     'allowed_methods' => ['*'],
-
-    'allowed_origins' => [env('FRONTEND_URL', 'http://localhost:3000')],
-
+    'allowed_origins' => ['*'], // Pour le dev, met '*' ou 'http://localhost:3000' (ton port React)
     'allowed_origins_patterns' => [],
-
     'allowed_headers' => ['*'],
-
     'exposed_headers' => [],
-
     'max_age' => 0,
-
     'supports_credentials' => true,
-
 ];

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../lib/axios"; // L'instance axios avec withCredentials: true
+
 
 export default function Connexion() {
   const navigate = useNavigate();
@@ -39,55 +39,46 @@ export default function Connexion() {
     e.preventDefault();
     setIsLoading(true);
 
-    // Validation locale (ton code)
-    if (
-      !/\S+@\S+\.\S+/.test(formData.email) ||
-      !formData.password.trim()
-    ) {
-      alert("Veuillez renseigner tous les champs");
-      setIsLoading(false);
-      return;
-    }
-
-    if (passwordStrength < 75) {
-      alert("Veuillez choisir un mot de passe plus fort");
+    if (!formData.email || !formData.password) {
+      alert("Veuillez remplir tous les champs");
       setIsLoading(false);
       return;
     }
 
     try {
-      // --- AJOUT CONFIG AXIOS / SANCTUM ---
-      // 1. Initialiser le cookie CSRF
-      await api.get("/sanctum/csrf-cookie");
-
-      // 2. Envoi des données (Laravel Breeze attend 'name' par défaut)
-      const reponse = await api.post("/Login", { // On combine pour Laravel
-        email: formData.email,
-        password: formData.password,
-        password_confirmation: formData.password, // Breeze exige une confirmation
+      const response = await fetch("http://localhost:8000/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        }),
       });
 
-      // --- FIN CONFIG AXIOS ---
+      const result = await response.json();
 
-      alert("Inscription réussie !");
-      
-      setFormData({
-        email: "",
-        password: "",
-      });
-      
-     navigate("/connexion", { replace: true });
+      // 1. Vérifier si la réponse est positive (Status 200)
+      if (!response.ok) {
+        // Si c'est une erreur 401 (identifiants incorrects) ou 422
+        alert(result.message || "Identifiants incorrects");
+        setFormData({ email: "", password: "" });
+        setIsLoading(false);
+        return;
+      }
+
+      // 2. Si succès : on stocke le token et on redirige
+      localStorage.setItem("token", result.token);
+      alert("Connexion réussie !");
+      setFormData({ email: "", password: "" });
+      navigate("/", { replace: true });
 
     } catch (err: any) {
-      console.error(err);
-      // Gestion des erreurs Laravel (ex: email déjà pris)
-      const message = err.response?.data?.message || "Erreur serveur";
-      alert("Erreur lors de l'envoi : " + message);
-      
-      setFormData({
-        email: "",
-        password: ""
-      });
+      // Cette partie ne s'exécute que s'il y a un problème réseau (CORS ou serveur éteint)
+      console.error("Erreur réseau:", err);
+      alert("Impossible de contacter le serveur. Vérifiez votre connexion.");
     } finally {
       setIsLoading(false);
     }
@@ -106,13 +97,7 @@ export default function Connexion() {
         <div className="max-md:order-1 flex flex-col justify-center md:space-y-16 space-y-8 max-md:mt-16 min-h-full bg-gradient-to-r from-slate-900 to-slate-700 lg:px-8 px-4 py-4">
           <div>
             <h3 className="text-white text-lg">Connectez-vous en toute sécurité afin d'acceder à l'application</h3>
-            <p className="text-[13px] text-slate-300 mt-3 leading-relaxed">Bienvenue sur notre page d'inscription ! Commencer par créer votre compte.</p>
-          </div>
-          <div>
-            <h3 className="text-white text-lg">Inscription simple & Sécurisée</h3>
-            <p className="text-[13px] text-slate-300 mt-3 leading-relaxed">
-              Notre processus d'inscription est conçu pour être simple 
-              et sécurisé. Nous accordons la priorité à la confidentialité et à la sécurité de vos donées..</p>
+            <p className="text-[13px] text-slate-300 mt-3 leading-relaxed">Bienvenue sur notre page de connexion ! Connectez vous.</p>
           </div>
         </div>
 
@@ -123,7 +108,7 @@ export default function Connexion() {
           </div>
 
           <div className="space-y-6">
-            
+
             <div>
               <label className="text-slate-900 text-sm font-medium mb-2 block">Email</label>
               <input name="email" value={formData.email} onChange={handleChange} type="email" required className="text-slate-900 bg-white border border-slate-300 w-full text-sm px-4 py-2.5 rounded-md outline-blue-500" placeholder="Entrez votre email" />
@@ -146,10 +131,10 @@ export default function Connexion() {
 
           <div className="mt-8">
             <button type="submit" disabled={isLoading} className="w-full py-2.5 px-4 tracking-wider text-sm rounded-md text-white bg-slate-800 hover:bg-slate-900 focus:outline-none cursor-pointer disabled:bg-slate-500">
-              {isLoading ? "Chargement..." : "Créer un compte"}
+              {isLoading ? "Chargement..." : "Connectez-vous"}
             </button>
           </div>
-          <p className="text-slate-600 text-sm mt-6 text-center">Vous avez déjà un compte? <a href="/connexion" className="text-blue-600 font-medium hover:underline ml-1">Connexion</a></p>
+          <p className="text-slate-600 text-sm mt-6 text-center">Vous n'avez pas de compte? <a href="/inscription" className="text-blue-600 font-medium hover:underline ml-1">Créer un compte</a></p>
         </form>
       </div>
     </div>

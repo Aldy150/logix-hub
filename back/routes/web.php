@@ -20,6 +20,3 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
     });
 });
 
-// Routes publiques
-Route::get('/login', function() { return view('login'); });
-Route::get('/register', function() { return view('register'); });
