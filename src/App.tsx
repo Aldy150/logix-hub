@@ -12,6 +12,7 @@ import Reports from "./pages/Reports";
 import NotFound from "./pages/NotFound";
 import Inscription from "./pages/inscription";
 import Connexion from "./pages/connexion";
+import AjoutClient from "./pages/AjoutClient";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="*" element={<NotFound />} />
           <Route path="/inscription" element={<Inscription />} />
           <Route path="/connexion" element={<Connexion />} />
+          <Route path="/client" element={<AjoutClient />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>

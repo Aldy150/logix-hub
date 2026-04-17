@@ -28,6 +28,9 @@ export default function Contacts() {
     return matchSearch && matchStatut;
   });
 
+  function Spell(){
+    alert("Fonctionnalité en cours de développement !");
+  }
   return (
     <div className="space-y-6 max-w-7xl">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-up">
@@ -35,7 +38,10 @@ export default function Contacts() {
           <h1 className="text-2xl font-semibold tracking-tight">Contacts</h1>
           <p className="text-sm text-muted-foreground mt-1">{contacts.length} contacts au total</p>
         </div>
-        <button className="inline-flex items-center gap-2 h-9 px-4 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors active:scale-[0.97]">
+        <button className="inline-flex items-center
+         gap-2 h-9 px-4 rounded-lg bg-primary text-primary-foreground
+          text-sm font-medium hover:bg-primary/90 transition-colors
+           active:scale-[0.97]" onClick={Spell}>
           <Plus className="h-4 w-4" />
           Nouveau contact
         </button>
