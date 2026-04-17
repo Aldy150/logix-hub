@@ -1,3 +1,5 @@
+
+
 export const revenueData = [
   { month: "Jan", revenue: 42000, objectif: 40000 },
   { month: "Fév", revenue: 38500, objectif: 42000 },
@@ -35,7 +37,7 @@ export type Contact = {
   email: string;
   entreprise: string;
   telephone: string;
-  statut: "client" | "prospect" | "lead" | "inactif";
+  statut: "client" | "prospect" | "relance" | "inactif";
   valeur: number;
   dernierContact: string;
   initials: string;
@@ -44,12 +46,12 @@ export type Contact = {
 export const contacts: Contact[] = [
   { id: "1", nom: "Marie Laurent", email: "m.laurent@techcorp.fr", entreprise: "TechCorp", telephone: "+33 6 12 34 56 78", statut: "client", valeur: 45000, dernierContact: "2026-03-19", initials: "ML" },
   { id: "2", nom: "Thomas Dubois", email: "t.dubois@innovatech.fr", entreprise: "InnovaTech", telephone: "+33 6 98 76 54 32", statut: "prospect", valeur: 28000, dernierContact: "2026-03-18", initials: "TD" },
-  { id: "3", nom: "Sophie Martin", email: "s.martin@dataviz.io", entreprise: "DataViz", telephone: "+33 6 45 67 89 01", statut: "lead", valeur: 15000, dernierContact: "2026-03-20", initials: "SM" },
+  { id: "3", nom: "Sophie Martin", email: "s.martin@dataviz.io", entreprise: "DataViz", telephone: "+33 6 45 67 89 01", statut: "relance", valeur: 15000, dernierContact: "2026-03-20", initials: "SM" },
   { id: "4", nom: "Lucas Bernard", email: "l.bernard@cloudnet.fr", entreprise: "CloudNet", telephone: "+33 6 23 45 67 89", statut: "client", valeur: 72000, dernierContact: "2026-03-17", initials: "LB" },
   { id: "5", nom: "Emma Petit", email: "e.petit@greentech.co", entreprise: "GreenTech", telephone: "+33 6 34 56 78 90", statut: "prospect", valeur: 33000, dernierContact: "2026-03-15", initials: "EP" },
   { id: "6", nom: "Hugo Moreau", email: "h.moreau@finpro.fr", entreprise: "FinPro", telephone: "+33 6 56 78 90 12", statut: "client", valeur: 89000, dernierContact: "2026-03-21", initials: "HM" },
   { id: "7", nom: "Léa Roux", email: "l.roux@mediasphere.fr", entreprise: "MediaSphere", telephone: "+33 6 67 89 01 23", statut: "inactif", valeur: 12000, dernierContact: "2026-02-28", initials: "LR" },
-  { id: "8", nom: "Antoine Leroy", email: "a.leroy@buildex.fr", entreprise: "BuildEx", telephone: "+33 6 78 90 12 34", statut: "lead", valeur: 19500, dernierContact: "2026-03-16", initials: "AL" },
+  { id: "8", nom: "Antoine Leroy", email: "a.leroy@buildex.fr", entreprise: "BuildEx", telephone: "+33 6 78 90 12 34", statut: "relance", valeur: 19500, dernierContact: "2026-03-16", initials: "AL" },
   { id: "9", nom: "Camille Girard", email: "c.girard@nexgen.io", entreprise: "NexGen", telephone: "+33 6 89 01 23 45", statut: "prospect", valeur: 41000, dernierContact: "2026-03-14", initials: "CG" },
   { id: "10", nom: "Nathan Fournier", email: "n.fournier@logipro.fr", entreprise: "LogiPro", telephone: "+33 6 90 12 34 56", statut: "client", valeur: 56000, dernierContact: "2026-03-20", initials: "NF" },
 ];

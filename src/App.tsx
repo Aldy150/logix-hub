@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { CRMLayout } from "@/components/CRMLayout";
 import Dashboard from "./pages/Dashboard";
-import Contacts from "./pages/Contacts";
+import Contacts from "./pages/Client";
 import Pipeline from "./pages/Pipeline";
 import Activities from "./pages/Activities";
 import Reports from "./pages/Reports";
@@ -24,14 +24,14 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<CRMLayout><Dashboard /></CRMLayout>} />
-          <Route path="/contacts" element={<CRMLayout><Contacts /></CRMLayout>} />
+          <Route path="/clients" element={<CRMLayout><Contacts /></CRMLayout>} />
           <Route path="/pipeline" element={<CRMLayout><Pipeline /></CRMLayout>} />
           <Route path="/activities" element={<CRMLayout><Activities /></CRMLayout>} />
           <Route path="/reports" element={<CRMLayout><Reports /></CRMLayout>} />
           <Route path="*" element={<NotFound />} />
           <Route path="/inscription" element={<Inscription />} />
           <Route path="/connexion" element={<Connexion />} />
-          <Route path="/client" element={<AjoutClient />} />
+          <Route path="/ajout" element={<AjoutClient />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>

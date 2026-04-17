@@ -25,7 +25,7 @@ import {
 
 const mainItems = [
   { title: "Tableau de bord", url: "/", icon: LayoutDashboard },
-  { title: "Contacts", url: "/contacts", icon: Users },
+  { title: "Nouveau client", url: "/clients", icon: Users },
   { title: "Pipeline", url: "/pipeline", icon: Kanban },
   { title: "Activités", url: "/activities", icon: CalendarDays },
   { title: "Rapports", url: "/reports", icon: TrendingUp },
