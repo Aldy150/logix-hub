@@ -17,7 +17,9 @@ return new class extends Migration
             $table->string('entreprise');    // Pour le nom de la société
             $table->string('email')->unique(); // Email unique pour éviter les doublons
             $table->string('statut');        // Prospect, Client Actif, etc.
-            $table->bigInteger('valeur');    // Utilisation de bigInteger pour les gros montants FCFA
+            $table->bigInteger('valeur'); 
+            $table->string('initial') ;
+            $table->string('telephone'); // Utilisation de bigInteger pour les gros montants FCFA
             $table->timestamps();            // created_at et updated_at
         });
     }
