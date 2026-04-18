@@ -10,7 +10,17 @@ class ClientController extends Controller
     // Récupérer tous les clients
     public function index()
     {
-        return response()->json(Client::all(), 200);
+        // 1. On récupère d'abord tous les clients
+        $clients = Client::all();
+
+        // 2. On calcule la somme de la colonne 'valeur'
+        $totalRevenus = Client::sum('valeur');
+
+        // 3. On renvoie UNE SEULE réponse JSON qui contient tout
+        return response()->json([
+            'clients' => $clients,
+            'total_revenus' => $totalRevenus
+        ], 200);
     }
 
     // Ajouter un client
