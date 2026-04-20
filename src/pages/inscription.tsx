@@ -42,7 +42,7 @@ export default function Inscription() {
     e.preventDefault();
     setIsLoading(true);
 
-    // Validation locale (ton code)
+    // 1. Validation locale
     if (
       !formData.nom.trim() ||
       !formData.prenom.trim() ||
@@ -55,10 +55,19 @@ export default function Inscription() {
     }
 
     if (passwordStrength < 75) {
-      alert("Veuillez choisir un mot de passe plus fort");
+      alert("Veuillez choisir un mot de passe plus fort (majuscules, chiffres, symboles)");
       setIsLoading(false);
       return;
     }
+
+    // 2. Payload conforme au backend Laravel (name et firstname)
+    const payload = {
+      name: formData.nom,
+      firstname: formData.prenom,
+      email: formData.email,
+      password: formData.password,
+      password_confirmation: formData.password, // Laravel demande "confirmed"
+    };
 
     try {
       const response = await fetch("http://localhost:8000/api/register", {
@@ -67,31 +76,43 @@ export default function Inscription() {
           "Content-Type": "application/json",
           "Accept": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       const result = await response.json();
 
-      // Si le serveur renvoie une erreur (422, 500, etc.)
       if (!response.ok) {
-        if (result.errors && result.errors.email) {
-          alert("Erreur : Cet email est déjà utilisé veuillez vous connecter !");
-          setFormData({ nom: "", prenom: "", email: "", password: "" });
+        // Gestion des erreurs de validation Laravel
+        if (response.status === 422 && result.errors) {
+          // Cherche la première erreur dans les champs Laravel (name, firstname, email, password)
+          if (result.errors.email) {
+            alert("Erreur : Cet email est déjà utilisé, veuillez vous connecter !");
+          } else if (result.errors.name) {
+            alert("Erreur : " + result.errors.name[0]);
+          } else if (result.errors.firstname) {
+            alert("Erreur : " + result.errors.firstname[0]);
+          } else if (result.errors.password) {
+            alert("Erreur : " + result.errors.password[0]);
+          } else {
+            const firstError = Object.values(result.errors)[0] as string[];
+            alert(firstError[0]);
+          }
         } else {
-          alert(result.message || "Une erreur est survenue");
+          alert(result.message || "Une erreur est survenue sur le serveur");
         }
         setIsLoading(false);
-        return; // On arrête l'exécution ici
+        return;
       }
 
-      // Si c'est un succès (201)
+      // 3. Succès
       alert("Inscription réussie !");
       setFormData({ nom: "", prenom: "", email: "", password: "" });
+      setPasswordStrength(0);
       navigate("/connexion", { replace: true });
 
     } catch (err: any) {
       console.error(err);
-      alert("Impossible de contacter le serveur.");
+      alert("Impossible de contacter le serveur. Vérifiez votre connexion.");
     } finally {
       setIsLoading(false);
     }
@@ -110,17 +131,17 @@ export default function Inscription() {
         <div className="max-md:order-1 flex flex-col justify-center md:space-y-16 space-y-8 max-md:mt-16 min-h-full bg-gradient-to-r from-slate-900 to-slate-700 lg:px-8 px-4 py-4">
           <div>
             <h3 className="text-white text-lg">Créer votre compte</h3>
-            <p className="text-[13px] text-slate-300 mt-3 leading-relaxed">Bienvenue sur notre page d'inscription ! Commencer par créer votre compte.</p>
+            <p className="text-[13px] text-slate-300 mt-3 leading-relaxed">Bienvenue sur notre page d'inscription ! Commencez par créer votre compte.</p>
           </div>
           <div>
             <h3 className="text-white text-lg">Inscription simple & Sécurisée</h3>
             <p className="text-[13px] text-slate-300 mt-3 leading-relaxed">
               Notre processus d'inscription est conçu pour être simple
-              et sécurisé. Nous accordons la priorité à la confidentialité et à la sécurité de vos donées..</p>
+              et sécurisé. Nous accordons la priorité à la confidentialité et à la sécurité de vos données.
+            </p>
           </div>
         </div>
 
-        {/* Ajout du onSubmit ici */}
         <form onSubmit={valider} className="md:col-span-2 w-full py-6 px-6 sm:px-14 max-w-lg mx-auto">
           <div className="mb-8">
             <h1 className="text-slate-900 text-2xl font-bold">Inscription</h1>
@@ -130,40 +151,86 @@ export default function Inscription() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-slate-900 text-sm font-medium mb-2 block">Nom</label>
-                <input name="nom" value={formData.nom} onChange={handleChange} type="text" required className="text-slate-900 bg-white border border-slate-300 w-full text-sm px-4 py-2.5 rounded-md outline-blue-500" placeholder="Nom" />
+                <input 
+                  name="nom" 
+                  value={formData.nom} 
+                  onChange={handleChange} 
+                  type="text" 
+                  required 
+                  className="text-slate-900 bg-white border border-slate-300 w-full text-sm px-4 py-2.5 rounded-md outline-blue-500" 
+                  placeholder="Nom" 
+                />
               </div>
               <div>
                 <label className="text-slate-900 text-sm font-medium mb-2 block">Prénom</label>
-                <input name="prenom" value={formData.prenom} onChange={handleChange} type="text" required className="text-slate-900 bg-white border border-slate-300 w-full text-sm px-4 py-2.5 rounded-md outline-blue-500" placeholder="Prénom" />
+                <input 
+                  name="prenom" 
+                  value={formData.prenom} 
+                  onChange={handleChange} 
+                  type="text" 
+                  required 
+                  className="text-slate-900 bg-white border border-slate-300 w-full text-sm px-4 py-2.5 rounded-md outline-blue-500" 
+                  placeholder="Prénom" 
+                />
               </div>
             </div>
 
             <div>
               <label className="text-slate-900 text-sm font-medium mb-2 block">Email</label>
-              <input name="email" value={formData.email} onChange={handleChange} type="email" required className="text-slate-900 bg-white border border-slate-300 w-full text-sm px-4 py-2.5 rounded-md outline-blue-500" placeholder="Entrez votre email" />
+              <input 
+                name="email" 
+                value={formData.email} 
+                onChange={handleChange} 
+                type="email" 
+                required 
+                className="text-slate-900 bg-white border border-slate-300 w-full text-sm px-4 py-2.5 rounded-md outline-blue-500" 
+                placeholder="Entrez votre email" 
+              />
             </div>
 
             <div>
               <label className="text-slate-900 text-sm font-medium mb-2 block">Mot de passe</label>
               <div className="relative flex items-center">
-                <input name="password" value={formData.password} onChange={handleChange} type={showPassword ? "text" : "password"} required className="text-slate-900 bg-white border border-slate-300 w-full text-sm pl-4 pr-10 py-2.5 rounded-md outline-blue-500" placeholder="Mot de passe" />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 text-slate-400">
+                <input 
+                  name="password" 
+                  value={formData.password} 
+                  onChange={handleChange} 
+                  type={showPassword ? "text" : "password"} 
+                  required 
+                  className="text-slate-900 bg-white border border-slate-300 w-full text-sm pl-4 pr-10 py-2.5 rounded-md outline-blue-500" 
+                  placeholder="Mot de passe" 
+                />
+                <button 
+                  type="button" 
+                  onClick={() => setShowPassword(!showPassword)} 
+                  className="absolute right-4 text-slate-400"
+                >
                   {showPassword ? "Masquer" : "Voir"}
                 </button>
               </div>
-              {/* Barre de force (ton design) */}
               <div className="mt-2 h-1 w-full bg-gray-200 rounded-full">
-                <div className={`h-full rounded-full transition-all duration-300 ${getPasswordStrengthColor()}`} style={{ width: `${passwordStrength}%` }}></div>
+                <div 
+                  className={`h-full rounded-full transition-all duration-300 ${getPasswordStrengthColor()}`} 
+                  style={{ width: `${passwordStrength}%` }}
+                ></div>
               </div>
+              <p className="text-xs text-slate-500 mt-1">Min. 8 caractères, majuscule, chiffre et symbole</p>
             </div>
           </div>
 
           <div className="mt-8">
-            <button type="submit" disabled={isLoading} className="w-full py-2.5 px-4 tracking-wider text-sm rounded-md text-white bg-slate-800 hover:bg-slate-900 focus:outline-none cursor-pointer disabled:bg-slate-500">
+            <button 
+              type="submit" 
+              disabled={isLoading} 
+              className="w-full py-2.5 px-4 tracking-wider text-sm rounded-md text-white bg-slate-800 hover:bg-slate-900 focus:outline-none cursor-pointer disabled:bg-slate-500"
+            >
               {isLoading ? "Chargement..." : "Créer un compte"}
             </button>
           </div>
-          <p className="text-slate-600 text-sm mt-6 text-center">Vous avez déjà un compte? <a href="/connexion" className="text-blue-600 font-medium hover:underline ml-1">Connexion</a></p>
+          <p className="text-slate-600 text-sm mt-6 text-center">
+            Vous avez déjà un compte? 
+            <a href="/connexion" className="text-blue-600 font-medium hover:underline ml-1">Connexion</a>
+          </p>
         </form>
       </div>
     </div>
