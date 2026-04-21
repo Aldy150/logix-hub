@@ -6,27 +6,23 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('clients', function (Blueprint $table) {
             $table->id();
-            $table->string('nom');           // Pour le nom complet
-            $table->string('entreprise');    // Pour le nom de la société
-            $table->string('email')->unique(); // Email unique pour éviter les doublons
-            $table->string('statut');        // Prospect, Client Actif, etc.
+            // 1. On ajoute une colonne user_id pour lier chaque client à un utilisateur
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('nom');
+            $table->string('entreprise');
+            $table->string('email'); 
+            $table->string('statut');
             $table->bigInteger('valeur'); 
-            $table->string('initial') ;
-            $table->string('telephone'); // Utilisation de bigInteger pour les gros montants FCFA
-            $table->timestamps();            // created_at et updated_at
+            $table->string('initial');
+            $table->string('telephone');
+            $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('clients');

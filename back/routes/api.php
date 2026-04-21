@@ -68,5 +68,15 @@ Route::post('/login', function (Request $request) {
 });
 
 // Routes clients
+/*
 Route::get('clients', [ClientController::class, 'index']);
 Route::post('clients', [ClientController::class, 'store']);
+*/
+
+Route::middleware('auth:sanctum')->group(function () {
+    
+    // Désormais, ici, $request->user() ne sera JAMAIS null
+    Route::get('clients', [ClientController::class, 'index']);
+    Route::post('clients', [ClientController::class, 'store']);
+    
+});
