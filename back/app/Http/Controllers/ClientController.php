@@ -7,16 +7,12 @@ use App\Models\Client;
 
 class ClientController extends Controller
 {
-    // Récupérer UNIQUEMENT les clients de l'utilisateur connecté
     public function index(Request $request)
     {
-        // On récupère l'utilisateur via son Token
         $user = $request->user();
 
-        // On récupère uniquement ses clients à lui
-        $clients = $user->clients;
-    
-        // On calcule la somme de la colonne 'valeur' uniquement pour ses clients
+        // On récupère les clients et le total en restant sur la requête SQL
+        $clients = $user->clients()->latest()->get();
         $totalRevenus = $user->clients()->sum('valeur');
 
         return response()->json([
@@ -25,23 +21,23 @@ class ClientController extends Controller
         ], 200);
     }
 
-    // Ajouter un client lié à l'utilisateur connecté
     public function store(Request $request)
     {
+        $user = $request->user();
+
         $validated = $request->validate([
             'nom' => 'required|string|max:255',
             'entreprise' => 'required|string|max:255',
-            // On enlève le 'unique' global pour que chaque user puisse avoir ses propres contacts
-            'email' => 'required|string|email|max:255', 
+            // Optionnel : Unique seulement pour cet utilisateur
+            'email' => 'required|email|max:255', 
             'telephone' => 'required|string|max:255',
-            'statut' => 'required|string|max:255',
+            'statut' => 'required|string|in:prospect,client,relance,inactif', // Sécurise les choix
             'valeur' => 'required|integer|min:0',
-            'initial' => 'required|string|max:255',
+            'initial' => 'required|string|max:3',
         ]);
 
-        // On crée le client EN l'attachant à l'utilisateur connecté
-        // Laravel va remplir tout seul la colonne 'user_id'
-        $client = $request->user()->clients()->create($validated);
+        // Création sécurisée liée à l'user_id
+        $client = $user->clients()->create($validated);
 
         return response()->json([
             'message' => 'Client ajouté avec succès',

@@ -73,10 +73,20 @@ Route::get('clients', [ClientController::class, 'index']);
 Route::post('clients', [ClientController::class, 'store']);
 */
 
+
 Route::middleware('auth:sanctum')->group(function () {
-    
-    // Désormais, ici, $request->user() ne sera JAMAIS null
     Route::get('clients', [ClientController::class, 'index']);
     Route::post('clients', [ClientController::class, 'store']);
-    
+
+    // NOUVELLE ROUTE : Stats adaptées à l'utilisateur
+    Route::get('dashboard-stats', function (Request $request) { 
+        $user = $request->user();
+
+        return response()->json([
+            'total_revenus'   => (int) $user->clients()->sum('valeur'),
+            'nombre_clients'  => $user->clients()->count(),
+            'nombre_prospects' => $user->clients()->where('statut', 'prospect')->count(),
+            'user_name'       => $user->firstname 
+        ]);
+    });
 });
