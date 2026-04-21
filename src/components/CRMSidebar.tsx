@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/sidebar";
 
 const mainItems = [
-  { title: "Tableau de bord", url: "/", icon: LayoutDashboard },
+  { title: "Tableau de bord", url: "/dashbord", icon: LayoutDashboard },
   { title: "Nouveau client", url: "/clients", icon: Users },
   { title: "Pipeline", url: "/pipeline", icon: Kanban },
   { title: "Activités", url: "/activities", icon: CalendarDays },

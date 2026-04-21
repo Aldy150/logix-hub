@@ -1,4 +1,5 @@
-import { Users, Euro, Handshake, Target, Phone, Mail, Video, Trophy,ShoppingCart } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Users, Euro, Handshake, Target, Phone, Mail, Video, Trophy, ShoppingCart } from "lucide-react";
 import { KPICard } from "@/components/KPICard";
 import { revenueData, dealsByStage, activityData, recentActivities } from "@/data/crmData";
 import {
@@ -14,6 +15,38 @@ const activityIcons: Record<string, typeof Phone> = {
 };
 
 export default function Dashboard() {
+  // 1. On crée un état pour stocker les vrais chiffres
+  const [stats, setStats] = useState({
+    total_revenus: 0,
+    nombre_clients: 0,
+    nombre_prospects: 0,
+  });
+
+  // 2. La fonction de récupération corrigée
+  const fetchDashboardData = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch("http://localhost:8000/api/dashboard-stats", {
+        headers: {
+          "Accept": "application/json",
+          "Authorization": `Bearer ${token}` // On envoie le jeton
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setStats(data); // On injecte les données de l'utilisateur
+      }
+    } catch (error) {
+      console.error("Erreur de récupération des données dashboard", error);
+    }
+  };
+
+  // 3. On lance la récupération au chargement
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
   return (
     <div className="space-y-6 max-w-7xl">
       <div className="animate-fade-up">
@@ -21,18 +54,17 @@ export default function Dashboard() {
         <p className="text-sm text-muted-foreground mt-1">Vue d'ensemble de votre activité commerciale</p>
       </div>
 
-      {/* KPIs */}
+      {/* KPIs - Valeurs adaptées dynamiquement */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <KPICard title="Revenu total" value="72 500 €" change={12.3} icon={<Euro className="h-5 w-5" />} className="animate-fade-up stagger-1" />
-        <KPICard title="Nouveaux clients" value="147" change={8.1} icon={<Users className="h-5 w-5" />} className="animate-fade-up stagger-2" />
+        <KPICard title="Revenu total" value={`${stats.total_revenus.toLocaleString()} FCFA`} change={12.3} icon={<Euro className="h-5 w-5" />} className="animate-fade-up stagger-1" />
+        <KPICard title="Nouveaux clients" value={stats.nombre_clients.toString()} change={8.1} icon={<Users className="h-5 w-5" />} className="animate-fade-up stagger-2" />
         <KPICard title="Deals en cours" value="23" change={-3.2} icon={<Handshake className="h-5 w-5" />} className="animate-fade-up stagger-3" />
         <KPICard title="Taux de conversion" value="34.2%" change={5.7} icon={<Target className="h-5 w-5" />} className="animate-fade-up stagger-4" />
         <KPICard title="Nombre de ventes" value="153" change={5.7} icon={<ShoppingCart className="h-5 w-5" />} className="animate-fade-up stagger-4" />
       </div>
 
-      {/* Charts row */}
+      {/* Charts row - Design original conservé */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Revenue chart */}
         <div className="lg:col-span-2 rounded-xl border bg-card p-5 shadow-sm animate-fade-up stagger-3">
           <h2 className="text-sm font-medium mb-4">Revenu mensuel</h2>
           <ResponsiveContainer width="100%" height={280}>
@@ -61,7 +93,6 @@ export default function Dashboard() {
           </ResponsiveContainer>
         </div>
 
-        {/* Deals by stage */}
         <div className="rounded-xl border bg-card p-5 shadow-sm animate-fade-up stagger-4">
           <h2 className="text-sm font-medium mb-4">Deals par étape</h2>
           <ResponsiveContainer width="100%" height={280}>
@@ -100,7 +131,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Activity + Recent */}
+      {/* Activity + Recent - Design original conservé */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2 rounded-xl border bg-card p-5 shadow-sm animate-fade-up stagger-4">
           <h2 className="text-sm font-medium mb-4">Activité hebdomadaire</h2>

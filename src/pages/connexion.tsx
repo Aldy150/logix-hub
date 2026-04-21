@@ -73,7 +73,7 @@ export default function Connexion() {
       localStorage.setItem("token", result.token);
       alert("Connexion réussie !");
       setFormData({ email: "", password: "" });
-      navigate("/", { replace: true });
+      navigate("/dashbord", { replace: true });
 
     } catch (err: any) {
       // Cette partie ne s'exécute que s'il y a un problème réseau (CORS ou serveur éteint)

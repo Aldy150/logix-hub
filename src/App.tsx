@@ -23,14 +23,14 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<CRMLayout><Dashboard /></CRMLayout>} />
+          <Route path="/dashbord" element={<CRMLayout><Dashboard /></CRMLayout>} />
           <Route path="/clients" element={<CRMLayout><Contacts /></CRMLayout>} />
           <Route path="/pipeline" element={<CRMLayout><Pipeline /></CRMLayout>} />
           <Route path="/activities" element={<CRMLayout><Activities /></CRMLayout>} />
           <Route path="/reports" element={<CRMLayout><Reports /></CRMLayout>} />
           <Route path="*" element={<NotFound />} />
           <Route path="/inscription" element={<Inscription />} />
-          <Route path="/connexion" element={<Connexion />} />
+          <Route path="/" element={<Connexion />} />
           <Route path="/ajout" element={<AjoutClient />} />
         </Routes>
       </BrowserRouter>
