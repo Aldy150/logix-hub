@@ -73,8 +73,8 @@ export default function Inscription() {
       const response = await fetch("http://localhost:8000/api/register", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
+          "Content-Type": "application/json", // INDISPENSABLE pour envoyer du JSON
+          "Accept": "application/json"
         },
         body: JSON.stringify(payload),
       });
@@ -87,6 +87,13 @@ export default function Inscription() {
           // Cherche la première erreur dans les champs Laravel (name, firstname, email, password)
           if (result.errors.email) {
             alert("Erreur : Cet email est déjà utilisé, veuillez vous connecter !");
+            setFormData({
+              nom: "",
+              prenom: "",
+              email: "",
+              password: ""
+            })
+            navigate("/connexion", { replace: true });
           } else if (result.errors.name) {
             alert("Erreur : " + result.errors.name[0]);
           } else if (result.errors.firstname) {
@@ -151,66 +158,66 @@ export default function Inscription() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-slate-900 text-sm font-medium mb-2 block">Nom</label>
-                <input 
-                  name="nom" 
-                  value={formData.nom} 
-                  onChange={handleChange} 
-                  type="text" 
-                  required 
-                  className="text-slate-900 bg-white border border-slate-300 w-full text-sm px-4 py-2.5 rounded-md outline-blue-500" 
-                  placeholder="Nom" 
+                <input
+                  name="nom"
+                  value={formData.nom}
+                  onChange={handleChange}
+                  type="text"
+                  required
+                  className="text-slate-900 bg-white border border-slate-300 w-full text-sm px-4 py-2.5 rounded-md outline-blue-500"
+                  placeholder="Nom"
                 />
               </div>
               <div>
                 <label className="text-slate-900 text-sm font-medium mb-2 block">Prénom</label>
-                <input 
-                  name="prenom" 
-                  value={formData.prenom} 
-                  onChange={handleChange} 
-                  type="text" 
-                  required 
-                  className="text-slate-900 bg-white border border-slate-300 w-full text-sm px-4 py-2.5 rounded-md outline-blue-500" 
-                  placeholder="Prénom" 
+                <input
+                  name="prenom"
+                  value={formData.prenom}
+                  onChange={handleChange}
+                  type="text"
+                  required
+                  className="text-slate-900 bg-white border border-slate-300 w-full text-sm px-4 py-2.5 rounded-md outline-blue-500"
+                  placeholder="Prénom"
                 />
               </div>
             </div>
 
             <div>
               <label className="text-slate-900 text-sm font-medium mb-2 block">Email</label>
-              <input 
-                name="email" 
-                value={formData.email} 
-                onChange={handleChange} 
-                type="email" 
-                required 
-                className="text-slate-900 bg-white border border-slate-300 w-full text-sm px-4 py-2.5 rounded-md outline-blue-500" 
-                placeholder="Entrez votre email" 
+              <input
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                type="email"
+                required
+                className="text-slate-900 bg-white border border-slate-300 w-full text-sm px-4 py-2.5 rounded-md outline-blue-500"
+                placeholder="Entrez votre email"
               />
             </div>
 
             <div>
               <label className="text-slate-900 text-sm font-medium mb-2 block">Mot de passe</label>
               <div className="relative flex items-center">
-                <input 
-                  name="password" 
-                  value={formData.password} 
-                  onChange={handleChange} 
-                  type={showPassword ? "text" : "password"} 
-                  required 
-                  className="text-slate-900 bg-white border border-slate-300 w-full text-sm pl-4 pr-10 py-2.5 rounded-md outline-blue-500" 
-                  placeholder="Mot de passe" 
+                <input
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  type={showPassword ? "text" : "password"}
+                  required
+                  className="text-slate-900 bg-white border border-slate-300 w-full text-sm pl-4 pr-10 py-2.5 rounded-md outline-blue-500"
+                  placeholder="Mot de passe"
                 />
-                <button 
-                  type="button" 
-                  onClick={() => setShowPassword(!showPassword)} 
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-4 text-slate-400"
                 >
                   {showPassword ? "Masquer" : "Voir"}
                 </button>
               </div>
               <div className="mt-2 h-1 w-full bg-gray-200 rounded-full">
-                <div 
-                  className={`h-full rounded-full transition-all duration-300 ${getPasswordStrengthColor()}`} 
+                <div
+                  className={`h-full rounded-full transition-all duration-300 ${getPasswordStrengthColor()}`}
                   style={{ width: `${passwordStrength}%` }}
                 ></div>
               </div>
@@ -219,16 +226,16 @@ export default function Inscription() {
           </div>
 
           <div className="mt-8">
-            <button 
-              type="submit" 
-              disabled={isLoading} 
+            <button
+              type="submit"
+              disabled={isLoading}
               className="w-full py-2.5 px-4 tracking-wider text-sm rounded-md text-white bg-slate-800 hover:bg-slate-900 focus:outline-none cursor-pointer disabled:bg-slate-500"
             >
               {isLoading ? "Chargement..." : "Créer un compte"}
             </button>
           </div>
           <p className="text-slate-600 text-sm mt-6 text-center">
-            Vous avez déjà un compte? 
+            Vous avez déjà un compte?
             <a href="/connexion" className="text-blue-600 font-medium hover:underline ml-1">Connexion</a>
           </p>
         </form>

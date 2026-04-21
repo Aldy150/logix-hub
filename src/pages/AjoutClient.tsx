@@ -64,19 +64,30 @@ export default function AjoutClient({ onSuccess }: AjoutClientProps = {}) {
 
     setLoading(true);
     try {
+      // 1. RÉCUPÉRER LE TOKEN DEPUIS LE STORAGE
+      const token = localStorage.getItem('token'); 
+
       const response = await fetch("http://localhost:8000/api/clients", {
         method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        headers: { 
+          "Content-Type": "application/json", 
+          "Accept": "application/json",
+          // 2. AJOUTER LE TOKEN ICI
+          "Authorization": `Bearer ${token}` 
+        },
         body: JSON.stringify(clientData),
       });
 
       if (response.ok) {
-        // MODIFIER CETTE PARTIE
         if (onSuccess) {
-          onSuccess(); // Appeler le callback si fourni
+          onSuccess(); 
         } else {
-          navigate("/contact"); // Comportement par défaut
+          navigate("/contact"); 
         }
+      } else if (response.status === 401) {
+        // 3. Gérer le cas où le token est expiré ou absent
+        alert("Session expirée. Veuillez vous reconnecter.");
+        navigate("/connexion");
       } else {
         const result = await response.json();
         alert("Erreur : " + (result.message || "Une erreur est survenue"));

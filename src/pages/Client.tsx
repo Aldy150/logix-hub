@@ -1,9 +1,8 @@
 // Contacts.tsx
 import { useState, useEffect } from "react";
-import { Search, Plus, MoreHorizontal, ArrowUpDown, X } from "lucide-react";
+import { Search, Plus, MoreHorizontal, X } from "lucide-react";
 import AjoutClient from "./AjoutClient";
 
-// Définissez le type Contact ici ou importez-le de crmData
 type Contact = {
   id: string;
   nom: string;
@@ -26,7 +25,7 @@ const statutColors: Record<Contact["statut"], string> = {
 const statutLabels: Record<Contact["statut"], string> = {
   client: "Client",
   prospect: "Prospect",
-  relance: "relance",
+  relance: "Relance",
   inactif: "Inactif",
 };
 
@@ -38,14 +37,26 @@ export default function Contacts() {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Récupérer les contacts depuis l'API
   const fetchContacts = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:8000/api/clients");
+      // RÉCUPÉRATION DU TOKEN
+      const token = localStorage.getItem('token'); 
+
+      const response = await fetch("http://localhost:8000/api/clients", {
+        headers: {
+          "Accept": "application/json",
+          "Authorization": `Bearer ${token}` // AJOUT DE LA SÉCURITÉ
+        }
+      });
+
       if (response.ok) {
         const data = await response.json();
-        const formattedContacts = data.map((client: any) => ({
+        
+        // On récupère la clé 'clients' car ton contrôleur renvoie un objet
+        const clientsList = data.clients || [];
+
+        const formattedContacts = clientsList.map((client: any) => ({
           id: client.id.toString(),
           nom: client.nom,
           email: client.email,
@@ -53,8 +64,8 @@ export default function Contacts() {
           telephone: client.telephone,
           statut: client.statut,
           valeur: client.valeur,
-          dernierContact: new Date().toISOString().split('T')[0],
-          initials: client.initial || client.nom.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)
+          dernierContact: new Date(client.created_at).toLocaleDateString(),
+          initials: client.initial || client.nom.substring(0, 2).toUpperCase()
         }));
         setContacts(formattedContacts);
       }
@@ -85,7 +96,6 @@ export default function Contacts() {
     }, 500);
   };
 
-  // Rafraîchir la liste après ajout
   const handleClientAdded = () => {
     setShowClientForm(false);
     fetchContacts();
@@ -93,8 +103,6 @@ export default function Contacts() {
 
   return (
     <div className="relative space-y-6 max-w-7xl">
-      
-      {/* MODALE - inchangée */}
       {showClientForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
           <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-white rounded-xl shadow-2xl animate-in fade-in zoom-in duration-200">
@@ -104,14 +112,11 @@ export default function Contacts() {
             >
               <X className="h-6 w-6 text-gray-500" />
             </button>
-            
-            {/* Ajout du callback onSuccess */}
             <AjoutClient onSuccess={handleClientAdded} />
           </div>
         </div>
       )}
 
-      {/* HEADER - inchangé sauf l'affichage du compteur */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-up">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Nouveau Client</h1>
@@ -136,7 +141,6 @@ export default function Contacts() {
         </button>
       </div>
 
-      {/* FILTRES - inchangé */}
       <div className="flex flex-col sm:flex-row gap-3 animate-fade-up stagger-1">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -165,7 +169,6 @@ export default function Contacts() {
         </div>
       </div>
 
-      {/* TABLEAU - inchangé mais avec gestion du chargement */}
       <div className="rounded-xl border bg-card shadow-sm overflow-hidden animate-fade-up stagger-2">
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
